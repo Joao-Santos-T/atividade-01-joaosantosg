@@ -22,7 +22,8 @@ jobs:
         setup-command: |
           pip install -r exercicio-tdd/requirements.txt
           pip install pytest
-          cp -r exercicio-tdd/* .
+          find . -type d -name "__pycache__" -exec rm -rf {} +
+        run: pytest
     - name: Autograding Reporter
       uses: classroom-resources/autograding-grading-reporter@v1
       env:
