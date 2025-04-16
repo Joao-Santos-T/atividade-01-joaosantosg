@@ -1,32 +1,35 @@
 name: Autograding Tests
-'on':
-- push
-- repository_dispatch
+on:
+  push:
+  repository_dispatch:
+
 permissions:
   checks: write
   actions: read
   contents: read
+
 jobs:
-  run-autograding-tests:
+  autograde:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Pytest
-      id: pytest
-      uses: classroom-resources/autograding-python-grader@v1
-      with:
-        timeout: 10
-        max-score: 10
-        setup-command: |
-          pip install -r exercicio-tdd/requirements.txt
-          pip install pytest
-          find . -type d -name "__pycache__" -exec rm -rf {} +
-        run: pytest
-    - name: Autograding Reporter
-      uses: classroom-resources/autograding-grading-reporter@v1
-      env:
-        PYTEST_RESULTS: "${{steps.pytest.outputs.result}}"
-      with:
-        runners: pytest
+      - uses: actions/checkout@v4
+
+      - name: Autograding
+        id: ag
+        uses: classroom-resources/autograding-python-grader@v1
+        with:
+          timeout: 10
+          max-score: 10
+          setup-command: |
+            pip install -r exercicio-tdd/requirements.txt
+            pip install pytest
+            find . -type d -name "__pycache__" -exec rm -rf {} +
+          entryPoint: pytest
+
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          PYTEST_RESULTS: "${{steps.ag.outputs.result}}"
+        with:
+          runners: pytest
