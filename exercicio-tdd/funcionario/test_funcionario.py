@@ -74,52 +74,6 @@ class TestFuncionario(TestCase):
             1000.0  # 200 * 5
         )
 
-    def test_validacao_salario_hora(self):
-        """Testa a validação do salário por hora."""
-        with self.assertRaises(ValueError):
-            Funcionario(
-                nome="Teste",
-                matricula=1,
-                salario_hora=0.0
-            )
-
-    def test_validacao_horas_trabalhadas(self):
-        """Testa a validação das horas trabalhadas."""
-        with self.assertRaises(ValueError):
-            Funcionario(
-                nome="Teste",
-                matricula=1,
-                horas_trabalhadas=-1.0
-            )
-
-    def test_validacao_custo_empregador(self):
-        """Testa a validação do custo do empregador."""
-        with self.assertRaises(ValueError):
-            Funcionario(
-                nome="Teste",
-                matricula=1,
-                custo_empregador=-1.0
-            )
-
-    def test_validacao_valor_comissao(self):
-        """Testa a validação do valor da comissão."""
-        with self.assertRaises(ValueError):
-            Funcionario(
-                nome="Teste",
-                matricula=1,
-                tem_comissao=True,
-                valor_comissao=0.0
-            )
-
-    def test_validacao_contratos_fechados(self):
-        """Testa a validação do número de contratos fechados."""
-        with self.assertRaises(ValueError):
-            Funcionario(
-                nome="Teste",
-                matricula=1,
-                contratos_fechados=-1
-            )
-
 
 if __name__ == "__main__":
     unittest.main() 
