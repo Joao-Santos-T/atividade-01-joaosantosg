@@ -13,35 +13,13 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f exercicio-tdd/requirements.txt ]; then pip install -r exercicio-tdd/requirements.txt; fi
-        pip install pytest pytest-subtests
-
-    - name: Prepare test environment
-      run: |
-        # Add exercicio-tdd to PYTHONPATH
-        echo "PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/exercicio-tdd" >> $GITHUB_ENV
-        # Create pytest.ini to configure test discovery
-        echo "[pytest]" > pytest.ini
-        echo "testpaths = exercicio-tdd" >> pytest.ini
-        echo "python_files = test_*.py" >> pytest.ini
-
     - name: Pytest
       id: pytest
       uses: classroom-resources/autograding-python-grader@v1
       with:
         timeout: 10
         max-score: 10
-        setup-command: ''
-        
+        setup-command: 'cd exercicio-tdd && pip install -r requirements.txt'
     - name: Autograding Reporter
       uses: classroom-resources/autograding-grading-reporter@v1
       env:
