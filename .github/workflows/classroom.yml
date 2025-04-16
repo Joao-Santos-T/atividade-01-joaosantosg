@@ -19,7 +19,10 @@ jobs:
       with:
         timeout: 10
         max-score: 10
-        setup-command: 'cd exercicio-tdd && pip install -r requirements.txt'
+        setup-command: |
+          pip install -r exercicio-tdd/requirements.txt
+          pip install pytest
+          cp -r exercicio-tdd/* .
     - name: Autograding Reporter
       uses: classroom-resources/autograding-grading-reporter@v1
       env:
