@@ -2,63 +2,123 @@
 Testes da classe Funcionario.
 """
 import unittest
+from unittest import TestCase
 
 from funcionario import Funcionario
 
 
-class TestFuncionario(unittest.TestCase):
+class TestFuncionario(TestCase):
     """Testes da classe Funcionario."""
 
     def setUp(self):
-        self.funcionario = Funcionario(
-            nome="Joao Vitor",
-            matricula=1121,
-            salario_hora=1000,
+        """Configuração inicial para os testes."""
+        self.funcionario_sem_comissao = Funcionario(
+            nome="João Silva",
+            matricula=123,
+            salario_hora=50.0,
             horas_trabalhadas=160,
-            custo_empregador=100,
+            custo_empregador=1000.0,
+            tem_comissao=False
+        )
+        
+        self.funcionario_com_comissao = Funcionario(
+            nome="Maria Santos",
+            matricula=456,
+            salario_hora=50.0,
+            horas_trabalhadas=160,
+            custo_empregador=1000.0,
             tem_comissao=True,
-            valor_comissao=100,
-            contratos_fechados=10
+            valor_comissao=200.0,
+            contratos_fechados=5
         )
 
     def test_calcular_salario_bruto(self):
         """Testa o cálculo do salário bruto."""
-        salario_bruto = self.funcionario.calcular_salario_bruto()
-        salario_base = self.funcionario.horas_trabalhadas * self.funcionario.salario_hora
-        comissao = self.funcionario.valor_comissao * self.funcionario.contratos_fechados
-        self.assertEqual(salario_bruto, salario_base + comissao)
-
-    def test_calcular_salario_bruto_sem_comissao(self):
-        """Testa o cálculo do salário bruto sem comissão."""
-        self.funcionario.tem_comissao = False
-        salario_bruto = self.funcionario.calcular_salario_bruto()
-        salario_base = self.funcionario.horas_trabalhadas * self.funcionario.salario_hora
-        self.assertEqual(salario_bruto, salario_base)
-
-    def test_calcular_comissao(self):
-        """Testa o cálculo da comissão."""
-        comissao = self.funcionario.calcular_comissao()
-        expected_comissao = self.funcionario.valor_comissao * self.funcionario.contratos_fechados
-        self.assertEqual(comissao, expected_comissao)
-
-    def test_calcular_comissao_negativa(self):
-        """Testa cálculo com valor de comissão negativo."""
-        self.funcionario.valor_comissao = -100.0
-        with self.assertRaises(ValueError):
-            self.funcionario.calcular_comissao()
+        # Teste para funcionário sem comissão
+        self.assertEqual(
+            self.funcionario_sem_comissao.calcular_salario_bruto(),
+            8000.0  # 50 * 160
+        )
+        
+        # Teste para funcionário com comissão
+        self.assertEqual(
+            self.funcionario_com_comissao.calcular_salario_bruto(),
+            8000.0  # 50 * 160
+        )
 
     def test_calcular_custo_total(self):
         """Testa o cálculo do custo total."""
-        custo_total = self.funcionario.calcular_custo_total()
-        salario_bruto = self.funcionario.calcular_salario_bruto()
-        self.assertEqual(custo_total, salario_bruto + self.funcionario.custo_empregador)
+        # Teste para funcionário sem comissão
+        self.assertEqual(
+            self.funcionario_sem_comissao.calcular_custo_total(),
+            9000.0  # 8000 + 1000
+        )
+        
+        # Teste para funcionário com comissão
+        self.assertEqual(
+            self.funcionario_com_comissao.calcular_custo_total(),
+            10000.0  # 8000 + 1000 + 1000 (comissão)
+        )
 
-    def test_calcular_custo_total_sem_comissao(self):
-        """Testa o cálculo do custo total sem comissão."""
-        self.funcionario.tem_comissao = False
-        custo_total = self.funcionario.calcular_custo_total()
-        salario_base = self.funcionario.horas_trabalhadas * self.funcionario.salario_hora
-        self.assertEqual(custo_total, salario_base + self.funcionario.custo_empregador)
+    def test_calcular_comissao(self):
+        """Testa o cálculo da comissão."""
+        # Teste para funcionário sem comissão
+        self.assertEqual(
+            self.funcionario_sem_comissao.calcular_comissao(),
+            0.0
+        )
+        
+        # Teste para funcionário com comissão
+        self.assertEqual(
+            self.funcionario_com_comissao.calcular_comissao(),
+            1000.0  # 200 * 5
+        )
+
+    def test_validacao_salario_hora(self):
+        """Testa a validação do salário por hora."""
+        with self.assertRaises(ValueError):
+            Funcionario(
+                nome="Teste",
+                matricula=1,
+                salario_hora=0.0
+            )
+
+    def test_validacao_horas_trabalhadas(self):
+        """Testa a validação das horas trabalhadas."""
+        with self.assertRaises(ValueError):
+            Funcionario(
+                nome="Teste",
+                matricula=1,
+                horas_trabalhadas=-1.0
+            )
+
+    def test_validacao_custo_empregador(self):
+        """Testa a validação do custo do empregador."""
+        with self.assertRaises(ValueError):
+            Funcionario(
+                nome="Teste",
+                matricula=1,
+                custo_empregador=-1.0
+            )
+
+    def test_validacao_valor_comissao(self):
+        """Testa a validação do valor da comissão."""
+        with self.assertRaises(ValueError):
+            Funcionario(
+                nome="Teste",
+                matricula=1,
+                tem_comissao=True,
+                valor_comissao=0.0
+            )
+
+    def test_validacao_contratos_fechados(self):
+        """Testa a validação do número de contratos fechados."""
+        with self.assertRaises(ValueError):
+            Funcionario(
+                nome="Teste",
+                matricula=1,
+                contratos_fechados=-1
+            )
 
 
 if __name__ == "__main__":
