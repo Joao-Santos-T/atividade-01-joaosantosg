@@ -6,13 +6,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - name: Install dependencies
         run: |
           pip install -r exercicio-tdd/requirements.txt
-          pip install pytest
-      - name: Run tests
-        run: pytest exercicio-tdd/
+          pip install pytest pytest-cov
+
+      - name: Mensagem de boas-vindas
+        run: echo "🚀 Olá, estudante! Vamos rodar seus testes e verificar a cobertura de código. Boa sorte! 🍀"
+
+      - name: Run tests with coverage
+        run: |
+          pytest --cov=exercicio-tdd --cov-report=term-missing --cov-fail-under=80 exercicio-tdd/
+
+      - name: Mensagem de parabéns
+        if: success()
+        run: echo "🎉 Parabéns! Todos os testes passaram e sua cobertura está acima de 80%! Continue assim! 👏"
+
+      - name: Mensagem de incentivo
+        if: failure()
+        run: echo "😢 Ops! Alguns testes falharam ou a cobertura ficou abaixo de 80%. Não desanime, revise seu código e tente novamente! 💪"
