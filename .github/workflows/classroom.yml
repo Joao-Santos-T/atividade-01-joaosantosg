@@ -1,33 +1,28 @@
 name: Autograding Tests
-on: [push, repository_dispatch]
-
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
 jobs:
-  test:
+  run-autograding-tests:
     runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          pip install -r exercicio-tdd/requirements.txt
-          pip install pytest pytest-cov
-
-      - name: Mensagem de boas-vindas
-        run: echo "🚀 Olá, estudante! Vamos rodar seus testes e verificar a cobertura de código. Boa sorte! 🍀"
-
-      - name: Run tests with coverage
-        run: |
-          pytest --cov=exercicio-tdd --cov-report=term-missing --cov-fail-under=80 exercicio-tdd/
-
-      - name: Mensagem de parabéns
-        if: success()
-        run: echo "🎉 Parabéns! Todos os testes passaram e sua cobertura está acima de 80%! Continue assim! 👏"
-
-      - name: Mensagem de incentivo
-        if: failure()
-        run: echo "😢 Ops! Alguns testes falharam ou a cobertura ficou abaixo de 80%. Não desanime, revise seu código e tente novamente! 💪"
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Pytest
+      id: pytest
+      uses: classroom-resources/autograding-python-grader@v1
+      with:
+        timeout: 10
+        max-score: 10
+        setup-command: ''
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        PYTEST_RESULTS: "${{steps.pytest.outputs.result}}"
+      with:
+        runners: pytest
